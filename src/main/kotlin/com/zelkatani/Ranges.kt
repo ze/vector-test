@@ -1,6 +1,5 @@
 package com.zelkatani
 
-
 class Ranges(private val ranges: List<List<Int>>) : Iterable<List<Int>> {
     override fun iterator(): Iterator<List<Int>> {
         return RangesIterator(ranges)

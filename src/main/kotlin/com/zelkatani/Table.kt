@@ -2,6 +2,9 @@ package com.zelkatani
 
 import java.io.File
 import java.io.FileNotFoundException
+import java.io.PrintWriter
+
+private const val TABLE_HEADER = "# These test vectors were programmatically generated."
 
 data class Table(val header: Header, val rows: List<Row>) {
 
@@ -25,20 +28,41 @@ data class Table(val header: Header, val rows: List<Row>) {
     }
 
     override fun toString() = buildString {
-        appendln("# These test vectors were programmatically generated.")
-        appendln(header.toString())
+        appendln(TABLE_HEADER)
+        appendln(header)
         rows.forEach {
-            appendln(it.toString())
+            appendln(it)
         }
     }
 }
 
-class TableBuilder : Builder<Table> {
+class TableBuilder(exporting: Pair<String, Boolean>?) : Builder<Table> {
     private lateinit var header: Header
     private val rows = mutableListOf<Row>()
 
+    private val exportFile = exporting?.first?.let {
+        val goodPath = if (!it.endsWith(".txt")) {
+            "$it.txt"
+        } else {
+            it
+        }
+
+        File(goodPath)
+    }
+    private val exportFileWriter = exportFile?.let {
+        PrintWriter(it.writer(), true)
+    }
+    private val writeAsWeGo = exporting?.second ?: false
+
     fun header(header: Header) {
         this.header = header
+
+        if (writeAsWeGo) {
+            exportFileWriter?.let {
+                it.println(TABLE_HEADER)
+                it.println(header)
+            }
+        }
     }
 
     fun header(block: HeaderBuilder.() -> Unit) {
@@ -52,6 +76,18 @@ class TableBuilder : Builder<Table> {
         header(header)
     }
 
+    fun row(row: Row) {
+        require(header.size == row.size) {
+            "The amount of entries in a row must equal the number of items in the header."
+        }
+
+        rows.add(row)
+
+        if (writeAsWeGo) {
+            exportFileWriter?.println(row)
+        }
+    }
+
     fun row(block: RowBuilder.() -> Unit) {
         val builder = RowBuilder()
 
@@ -60,11 +96,7 @@ class TableBuilder : Builder<Table> {
             it.build()
         }
 
-        require(header.size == row.size) {
-            "The amount of entries in a row must equal the number of items in the header."
-        }
-
-        rows.add(row)
+        row(row)
     }
 
     fun row(entryType: EntryType, vararg entryList: String) {
@@ -73,7 +105,7 @@ class TableBuilder : Builder<Table> {
         }
 
         val row = Row(mappedEntries)
-        rows.add(row)
+        row(row)
     }
 
     fun row(vararg intEntries: Int) = row {
@@ -91,10 +123,20 @@ class TableBuilder : Builder<Table> {
         }
     }
 
-    override fun build() = Table(header, rows)
+    override fun build(): Table {
+        val table = Table(header, rows)
+
+        if (!writeAsWeGo && exportFile != null) {
+            table.exportToFile(exportFile.path)
+        }
+
+        exportFileWriter?.close()
+
+        return table
+    }
 }
 
-fun buildTable(block: TableBuilder.() -> Unit) = TableBuilder().let {
+fun buildTable(exporting: Pair<String, Boolean>? = null, block: TableBuilder.() -> Unit) = TableBuilder(exporting).let {
     it.block()
     it.build()
 }

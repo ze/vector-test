@@ -2,8 +2,8 @@ package com.zelkatani
 
 import com.zelkatani.EntryType.*
 import org.junit.jupiter.api.Test
+import java.io.File
 
-// TODO assertions
 internal class TableTest {
     @Test
     fun `Test buildTable`() {
@@ -27,6 +27,9 @@ internal class TableTest {
                 entry(707653888)
             }
         }
+
+        assert(table.header.size == 4)
+        assert(table.rows.size == 6)
     }
 
     @Test
@@ -50,8 +53,13 @@ internal class TableTest {
                 item("C", 32)
             }
 
-            functionPermutations(add32Function, (-200..200).toList(), (-200..200).toList())
+            // this list has 401 items in it. -200 to -1, 0, 1 to 200.
+            val spread = (-200..200).toList()
+            functionPermutations(add32Function, spread, spread)
         }
+
+        assert(table.header.size == 3)
+        assert(table.rows.size == 401 * 401)
     }
 
     @Test
@@ -76,13 +84,37 @@ internal class TableTest {
                 item("C", 4)
             }
 
+            // 16 items in this range.
             val signedFourBitRange = (-8..7).toList()
             functionPermutations(andFunction, signedFourBitRange, signedFourBitRange)
         }
 
         val file = table.exportToFile("and-testvector")
         assert(file.exists())
-        assert(file.readLines().size == 258)
+        assert(file.readLines().size == 258) // 256 rows, one header, and one descriptor.
         file.deleteOnExit()
+    }
+
+    @Test
+    fun `Test File Writing As We Go`() {
+        val fileName = "test.txt"
+
+
+        val doublingFunction = object : Function<Int> {
+            override fun eval(fields: IntArray): Int {
+                return fields[0] * 2
+            }
+        }
+
+        buildTable(fileName to true) {
+            header {
+                item("A", 32)
+                item("B", 32)
+            }
+
+            functionPermutations(doublingFunction, (1..10_000 step 2).toList())
+        }
+
+        File(fileName).deleteOnExit()
     }
 }
