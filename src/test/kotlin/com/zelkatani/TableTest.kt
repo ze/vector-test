@@ -3,6 +3,7 @@ package com.zelkatani
 import com.zelkatani.EntryType.*
 import org.junit.jupiter.api.Test
 
+// TODO assertions
 internal class TableTest {
     @Test
     fun `Test buildTable`() {
@@ -26,8 +27,6 @@ internal class TableTest {
                 entry(707653888)
             }
         }
-
-        println(table)
     }
 
     @Test
@@ -53,7 +52,37 @@ internal class TableTest {
 
             functionPermutations(add32Function, (-200..200).toList(), (-200..200).toList())
         }
+    }
 
-        println(table)
+    @Test
+    fun `Test File Exporting`() {
+        val andFunction = object : Function<Int> {
+            override fun eval(fields: IntArray): Int {
+                require(fields.size == 2) {
+                    "Function requires exactly two parameters."
+                }
+
+                val a = fields[0]
+                val b = fields[1]
+                return a and b
+            }
+
+        }
+
+        val table = buildTable {
+            header {
+                item("A", 4)
+                item("B", 4)
+                item("C", 4)
+            }
+
+            val signedFourBitRange = (-8..7).toList()
+            functionPermutations(andFunction, signedFourBitRange, signedFourBitRange)
+        }
+
+        val file = table.exportToFile("and-testvector")
+        assert(file.exists())
+        assert(file.readLines().size == 258)
+        file.deleteOnExit()
     }
 }

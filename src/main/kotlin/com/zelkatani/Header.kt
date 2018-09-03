@@ -20,5 +20,17 @@ class HeaderBuilder : Builder<Header> {
 }
 
 data class HeaderItem(private val name: String, private val dataBits: Int = 1) {
-    override fun toString() = "$name[$dataBits]"
+    init {
+        require(dataBits >= 1) {
+            "Data bits must be at least one."
+        }
+    }
+
+    override fun toString(): String {
+        return if (dataBits > 1) {
+            "$name[$dataBits]"
+        } else {
+            name
+        }
+    }
 }

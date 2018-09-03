@@ -1,6 +1,29 @@
 package com.zelkatani
 
+import java.io.File
+import java.io.FileNotFoundException
+
 data class Table(val header: Header, val rows: List<Row>) {
+
+    fun exportToFile(path: String): File {
+        val goodPath = if (!path.endsWith(".txt")) {
+            "$path.txt"
+        } else {
+            path
+        }
+
+        val file = File(goodPath)
+        if (!file.exists()) {
+            if (!file.createNewFile()) {
+                throw FileNotFoundException("File creation failed.")
+            }
+        }
+
+        file.writeText(toString())
+
+        return file
+    }
+
     override fun toString() = buildString {
         appendln("# These test vectors were programmatically generated.")
         appendln(header.toString())
