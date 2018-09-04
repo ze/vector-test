@@ -64,6 +64,8 @@ internal class TableTest {
 
     @Test
     fun `Test Function with Multi Returns`() {
+        val fileName = "multiple_returns.txt"
+
         val add32OverflowFunction = object : Function<Int> {
             override fun eval(fields: IntArray): Array<Int> {
                 require(fields.size == 2) {
@@ -79,7 +81,7 @@ internal class TableTest {
             }
         }
 
-        val table = buildTable("test" to true) {
+        val table = buildTable(fileName to true) {
             header {
                 item("A", 32)
                 item("B", 32)
@@ -87,14 +89,14 @@ internal class TableTest {
                 item("V")
             }
 
-            // 43 entries 2,147,483,647 / 100_000_000 -> 21.5. Double to get 43.
+            // 43 entries 2,147,483,647 / 100_000_000 -> 21. Double to get 42. Since bounds are inclusive, +1 = 43.
             val intRange = (Integer.MIN_VALUE..Integer.MAX_VALUE step 100_000_000).toList()
 
             functionPermutations(add32OverflowFunction, intRange, intRange)
         }
 
         assert(table.rows.size == 43 * 43)
-        File("test.txt").deleteOnExit()
+        File(fileName).deleteOnExit()
     }
 
     @Test
@@ -109,7 +111,6 @@ internal class TableTest {
                 val b = fields[1]
                 return arrayOf(a and b)
             }
-
         }
 
         val table = buildTable {
@@ -132,8 +133,7 @@ internal class TableTest {
 
     @Test
     fun `Test File Writing As We Go`() {
-        val fileName = "test.txt"
-
+        val fileName = "write_as_we_go.txt"
 
         val doublingFunction = object : Function<Int> {
             override fun eval(fields: IntArray): Array<Int> {
