@@ -1,4 +1,4 @@
-package com.zelkatani
+package com.zelkatani.vectortest
 
 /**
  * A table header. This describes the columns.
@@ -9,6 +9,9 @@ data class Header(private val headers: List<HeaderItem>) {
      */
     val size = headers.size
 
+    /**
+     * All of the headers together but space separated.
+     */
     override fun toString() = headers.joinToString(" ") {
         it.toString()
     }
@@ -41,6 +44,9 @@ data class HeaderItem @JvmOverloads constructor(private val name: String, privat
         }
     }
 
+    /**
+     * The representation of the header. If data bits are > 1, it will be put next to the header name surrounded by brackets.
+     */
     override fun toString(): String {
         return if (dataBits > 1) {
             "$name[$dataBits]"

@@ -1,4 +1,4 @@
-package com.zelkatani
+package com.zelkatani.vectortest
 
 import java.io.File
 import java.io.FileNotFoundException
@@ -11,6 +11,9 @@ private const val TABLE_HEADER = "# These test vectors were programmatically gen
 
 /**
  * A table that follows the vector test model.
+ *
+ * @property header the header of the table.
+ * @property rows the rows of the table.
  */
 data class Table(val header: Header, val rows: List<Row>) {
 
@@ -36,6 +39,9 @@ data class Table(val header: Header, val rows: List<Row>) {
         return file
     }
 
+    /**
+     * Output the table as a string in the format of a test vector for Logisim.
+     */
     override fun toString() = buildString {
         appendln(TABLE_HEADER)
         appendln(header)
@@ -118,7 +124,7 @@ class TableBuilder(exporting: Pair<String, Boolean>?) : Builder<Table> {
     }
 
     /**
-     * Place a number of entries of type [entryType] into a new row in the table.
+     * Place a number of entries of type [EntryType] into a new row in the table.
      */
     fun row(entryType: EntryType, vararg entryList: String) {
         val mappedEntries = entryList.map {

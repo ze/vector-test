@@ -1,4 +1,4 @@
-package com.zelkatani
+package com.zelkatani.vectortest
 
 /**
  * Builder interface to build components.

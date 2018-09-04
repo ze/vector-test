@@ -1,7 +1,7 @@
-package com.zelkatani
+package com.zelkatani.vectortest
 
 /**
- * Function interface to create functions that return some number of [T]'s
+ * Function interface to create functions that return some number of [T]'s.
  */
 interface Function<T> {
     /**

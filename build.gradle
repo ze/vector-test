@@ -1,19 +1,27 @@
 buildscript {
     ext.kotlin_version = "1.2.61"
+    ext.dokka_version = "0.9.17"
     ext.junit_version = "5.1.0"
 
     repositories {
         mavenCentral()
+        jcenter()
     }
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
         classpath "org.junit.platform:junit-platform-gradle-plugin:1.1.0"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+"
     }
 }
 
 apply plugin: "kotlin"
 apply plugin: "org.junit.platform.gradle.plugin"
+apply plugin: "org.jetbrains.dokka"
+apply plugin: "maven-publish"
+apply plugin: "signing"
+apply plugin: "com.jfrog.bintray"
 
 repositories {
     mavenCentral()
@@ -35,5 +43,84 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+}
+
+dokka {
+    outputFormat = "html"
+    outputDirectory = "$buildDir/javadoc"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "zelkatani"
+            name "Zakaria Elkatani"
+            email "zelkatani@gmail.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/ze/vector-test"
+    }
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar {
+                classifier "sources"
+            }
+
+            groupId "com.zelkatani"
+            artifactId "vector-test"
+            version "0.1"
+
+            pom.withXml {
+                def root = asNode()
+                root.appendNode("name", "vector-test")
+                root.appendNode("description", "A library for the programmatic generation of vector test files for Logisim.")
+                root.appendNode("url", "https://github.com/ze/vector-test")
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+bintray {
+    user = bintray_user
+    key = bintray_key
+
+    publications = ["mavenPublication"]
+    publish = true
+
+    pkg {
+        repo = "vector-test"
+        name = "vector-test"
+        desc = "A programmatic test vector generator for Logisim"
+        vcsUrl = "https://github.com/ze/vector-test"
+        licenses = ["Apache-2.0"]
+
+        version {
+            name = "0.1"
+        }
     }
 }

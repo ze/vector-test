@@ -1,4 +1,4 @@
-package com.zelkatani
+package com.zelkatani.vectortest
 
 import org.junit.jupiter.api.Test
 

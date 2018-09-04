@@ -1,6 +1,6 @@
-package com.zelkatani
+package com.zelkatani.vectortest
 
-import com.zelkatani.EntryType.*
+import com.zelkatani.vectortest.EntryType.*
 import org.junit.jupiter.api.Test
 import java.io.File
 

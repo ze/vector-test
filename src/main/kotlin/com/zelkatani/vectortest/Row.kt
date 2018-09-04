@@ -1,9 +1,11 @@
-package com.zelkatani
+package com.zelkatani.vectortest
 
-import com.zelkatani.EntryType.*
+import com.zelkatani.vectortest.EntryType.*
 
 /**
  * A table row entry. This describes one set of values for the table.
+ *
+ * @property entries the entries of the row.
  */
 data class Row(val entries: List<Entry>) {
     /**
@@ -11,6 +13,9 @@ data class Row(val entries: List<Entry>) {
      */
     val size = entries.size
 
+    /**
+     * The row with all entries being space separated.
+     */
     override fun toString() = entries.joinToString(" ") {
         it.toString() + " "
     }
@@ -67,6 +72,9 @@ class RowBuilder : Builder<Row> {
 
 /**
  * A row entry. Has a [value] and an [entryType] that defines what the entry is.
+ *
+ * @property value the contents of the entry.
+ * @property entryType the data type of the entry.
  */
 data class Entry @JvmOverloads constructor(val value: String, val entryType: EntryType = UINT) {
     init {
@@ -112,6 +120,9 @@ data class Entry @JvmOverloads constructor(val value: String, val entryType: Ent
         }
     }
 
+    /**
+     * The [value] of the entry.
+     */
     override fun toString() = value
 }
 
@@ -119,9 +130,24 @@ data class Entry @JvmOverloads constructor(val value: String, val entryType: Ent
  * All possible entry types that can be represented in the table.
  */
 enum class EntryType {
+    /**
+     * An unsigned integer.
+     */
     UINT,
+    /**
+     * A negative integer.
+     */
     NEG_INT,
+    /**
+     * A binary number.
+     */
     BINARY,
+    /**
+     * A hexadecimal number.
+     */
     HEXADECIMAL,
+    /**
+     * An octal number.
+     */
     OCTAL
 }
