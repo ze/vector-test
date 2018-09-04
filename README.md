@@ -40,8 +40,8 @@ val table = buildTable {
     }
 }
 
-println(table) // NOTE: the table below is prettier than what it actually is.
-
+// the table is modeled like this.
+// NOTE: the below table is far prettier than the actual result when printing.
 /*
 A B[15]             C[16]
 0 0                 0
@@ -67,9 +67,16 @@ val addFunction = object : Function<Int> {
     }
 }
 
-val table = buildTable {
+val exportFileName = "function-generated.txt"
+
+// A pair can be passed to this function to handle easy writing.
+// The first value in the pair is the name of the file to export.
+// The second value in the pair controls if file writing happens as we go, or at the end.
+val table = buildTable(exportFileName to true) {
     header {
-        ...
+        item("A", 32)
+        item("B", 32)
+        item("C", 32)
     }
 
     val aRange = (0..1000 step 5).toList()
@@ -79,4 +86,5 @@ val table = buildTable {
 
 // table is now populated with the cartesian product 
 // of aRange and bRange mapped into addFunction.
+val file = File(exportFileName)
 ```
