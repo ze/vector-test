@@ -1,11 +1,17 @@
 package com.zelkatani
 
+/**
+ * An iterable for the cartesian product of a list of lists.
+ */
 class Ranges(private val ranges: List<List<Int>>) : Iterable<List<Int>> {
     override fun iterator(): Iterator<List<Int>> {
         return RangesIterator(ranges)
     }
 }
 
+/**
+ * The iterator for [Ranges]. This process is done by index.
+ */
 class RangesIterator(private val ranges: List<List<Int>>) : Iterator<List<Int>> {
 
     private val rangeSizes = ranges.map { it.size }
@@ -32,5 +38,4 @@ class RangesIterator(private val ranges: List<List<Int>>) : Iterator<List<Int>> 
             list[indices[index]]
         }
     }
-
 }
