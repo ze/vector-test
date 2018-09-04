@@ -35,14 +35,14 @@ internal class TableTest {
     @Test
     fun `Test Function Generation`() {
         val add32Function = object : Function<Int> {
-            override fun eval(fields: IntArray): Int {
+            override fun eval(fields: IntArray): Array<Int> {
                 require(fields.size == 2) {
                     "32 bit adder requires exactly two parameters."
                 }
 
                 val a = fields[0]
                 val b = fields[1]
-                return a + b
+                return arrayOf(a + b)
             }
         }
 
@@ -63,16 +63,51 @@ internal class TableTest {
     }
 
     @Test
+    fun `Test Function with Multi Returns`() {
+        val add32OverflowFunction = object : Function<Int> {
+            override fun eval(fields: IntArray): Array<Int> {
+                require(fields.size == 2) {
+                    "There must be exactly two parameters in a one bit adder."
+                }
+                val a = fields[0]
+                val b = fields[1]
+
+                val sum = a + b
+                val overflow = if (a xor sum and (b xor sum) < 0) 1 else 0 // signs are different
+
+                return arrayOf(sum, overflow)
+            }
+        }
+
+        val table = buildTable("test" to true) {
+            header {
+                item("A", 32)
+                item("B", 32)
+                item("C", 32)
+                item("V")
+            }
+
+            // 43 entries 2,147,483,647 / 100_000_000 -> 21.5. Double to get 43.
+            val intRange = (Integer.MIN_VALUE..Integer.MAX_VALUE step 100_000_000).toList()
+
+            functionPermutations(add32OverflowFunction, intRange, intRange)
+        }
+
+        assert(table.rows.size == 43 * 43)
+        File("test.txt").deleteOnExit()
+    }
+
+    @Test
     fun `Test File Exporting`() {
         val andFunction = object : Function<Int> {
-            override fun eval(fields: IntArray): Int {
+            override fun eval(fields: IntArray): Array<Int> {
                 require(fields.size == 2) {
                     "Function requires exactly two parameters."
                 }
 
                 val a = fields[0]
                 val b = fields[1]
-                return a and b
+                return arrayOf(a and b)
             }
 
         }
@@ -101,8 +136,8 @@ internal class TableTest {
 
 
         val doublingFunction = object : Function<Int> {
-            override fun eval(fields: IntArray): Int {
-                return fields[0] * 2
+            override fun eval(fields: IntArray): Array<Int> {
+                return arrayOf(fields[0] * 2)
             }
         }
 

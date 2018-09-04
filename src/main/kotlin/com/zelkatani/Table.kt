@@ -119,7 +119,7 @@ class TableBuilder(exporting: Pair<String, Boolean>?) : Builder<Table> {
         ranges.forEach {
             val spreaded = it.toIntArray()
             val evaluated = function.eval(spreaded)
-            row(*spreaded, evaluated)
+            row(*spreaded, *evaluated.toIntArray())
         }
     }
 
