@@ -8,10 +8,8 @@ vector-test is a library for programmatically generating test vector files for [
 Add JCenter to the list of repositories if not already included.
 
 ```groovy
-buildscript {
-    repositories {
-        jcenter()
-    }
+repositories {
+    jcenter()
 }
 ```
 
