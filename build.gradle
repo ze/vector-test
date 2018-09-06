@@ -77,7 +77,7 @@ def pomConfig = {
     }
 
     scm {
-        url "https://github.com/ze/vector-test"
+        url vector_test_cvs
     }
 }
 
@@ -91,14 +91,14 @@ publishing {
             }
 
             groupId "com.zelkatani"
-            artifactId "vector-test"
-            version "0.2"
+            artifactId vector_test_name
+            version vector_test_version
 
             pom.withXml {
                 def root = asNode()
-                root.appendNode("name", "vector-test")
-                root.appendNode("description", "A library for the programmatic generation of vector test files for Logisim.")
-                root.appendNode("url", "https://github.com/ze/vector-test")
+                root.appendNode("name", vector_test_name)
+                root.appendNode("description", vector_test_desc)
+                root.appendNode("url", vector_test_cvs)
                 root.children().last() + pomConfig
             }
         }
@@ -113,14 +113,14 @@ bintray {
     publish = true
 
     pkg {
-        repo = "vector-test"
-        name = "vector-test"
-        desc = "A programmatic test vector generator for Logisim"
-        vcsUrl = "https://github.com/ze/vector-test"
+        repo = vector_test_name
+        name = vector_test_name
+        desc = vector_test_desc
+        vcsUrl = vector_test_cvs
         licenses = ["Apache-2.0"]
 
         version {
-            name = "0.1"
+            name = vector_test_version
         }
     }
 }
