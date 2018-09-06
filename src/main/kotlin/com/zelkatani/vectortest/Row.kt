@@ -6,8 +6,9 @@ import com.zelkatani.vectortest.EntryType.*
  * A table row entry. This describes one set of values for the table.
  *
  * @property entries the entries of the row.
+ * @property comment the comment describing the row.
  */
-data class Row(val entries: List<Entry>) {
+data class Row(val entries: List<Entry>, val comment: String = "") {
     /**
      * The number of items in the row.
      */
@@ -17,8 +18,8 @@ data class Row(val entries: List<Entry>) {
      * The row with all entries being space separated.
      */
     override fun toString() = entries.joinToString(" ") {
-        it.toString() + " "
-    }
+        it.toString()
+    } + if (!comment.isEmpty()) " # $comment" else comment
 }
 
 /**
@@ -26,6 +27,7 @@ data class Row(val entries: List<Entry>) {
  */
 class RowBuilder : Builder<Row> {
     private val entries = mutableListOf<Entry>()
+    private var comment: String = ""
 
     /**
      * Add a single entry with [value] to the row.
@@ -67,7 +69,14 @@ class RowBuilder : Builder<Row> {
         }
     }
 
-    override fun build() = Row(entries)
+    /**
+     * Give a row a comment at the end of its line.
+     */
+    fun comment(msg: String) {
+        comment = msg
+    }
+
+    override fun build() = Row(entries, comment)
 }
 
 /**

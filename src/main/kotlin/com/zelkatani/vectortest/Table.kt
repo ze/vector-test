@@ -3,6 +3,7 @@ package com.zelkatani.vectortest
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.PrintWriter
+import java.util.concurrent.ThreadLocalRandom
 
 /**
  * Header message for all tables.
@@ -155,6 +156,23 @@ class TableBuilder(exporting: Pair<String, Boolean>?) : Builder<Table> {
             row(*spreadIntArray, *evaluated)
         }
     }
+
+    /**
+     * Populate the table with random values selected from [spreads] mapped onto [function].
+     */
+    fun randomFunctionSampling(function: Function<Int>, samples: Int, vararg spreads: List<Int>) {
+        repeat(samples) {
+            val randomSpreadValues = spreads.map { spread ->
+                spread.random()
+            }.toIntArray()
+
+            val evaluated = function.eval(randomSpreadValues).toIntArray()
+
+            row(*randomSpreadValues, *evaluated)
+        }
+    }
+
+    private fun <T> List<T>.random() = get(ThreadLocalRandom.current().nextInt(size))
 
     override fun build(): Table {
         val table = Table(header, rows)

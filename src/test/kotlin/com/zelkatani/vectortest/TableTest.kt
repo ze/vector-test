@@ -5,6 +5,18 @@ import org.junit.jupiter.api.Test
 import java.io.File
 
 internal class TableTest {
+    private val add32Function = object : Function<Int> {
+        override fun eval(fields: IntArray): Array<Int> {
+            require(fields.size == 2) {
+                "32 bit adder requires exactly two parameters."
+            }
+
+            val a = fields[0]
+            val b = fields[1]
+            return arrayOf(a + b)
+        }
+    }
+
     @Test
     fun `Test buildTable`() {
         val table = buildTable {
@@ -34,18 +46,6 @@ internal class TableTest {
 
     @Test
     fun `Test Function Generation`() {
-        val add32Function = object : Function<Int> {
-            override fun eval(fields: IntArray): Array<Int> {
-                require(fields.size == 2) {
-                    "32 bit adder requires exactly two parameters."
-                }
-
-                val a = fields[0]
-                val b = fields[1]
-                return arrayOf(a + b)
-            }
-        }
-
         val table = buildTable {
             header {
                 item("A", 32)
@@ -60,6 +60,23 @@ internal class TableTest {
 
         assert(table.header.size == 3)
         assert(table.rows.size == 401 * 401)
+    }
+
+    @Test
+    fun `Test Random Function Spread`() {
+        val table = buildTable {
+            header {
+                item("A", 32)
+                item("B", 32)
+                item("C", 32)
+            }
+
+            // can't make it too big!
+            val spread = (Integer.MIN_VALUE..Integer.MAX_VALUE step 10_000_000).toList()
+            randomFunctionSampling(add32Function, 100, spread, spread)
+        }
+
+        assert(table.rows.size == 100)
     }
 
     @Test
@@ -151,5 +168,18 @@ internal class TableTest {
         }
 
         File(fileName).deleteOnExit()
+    }
+
+    @Test
+    fun `Test Row Comments`() {
+        val entries = listOf(1, 2, 3).map {
+            Entry(it.toString())
+        }
+
+        val commentRow = Row(entries, "I am a comment!")
+        assert("1 2 3 # I am a comment!" == commentRow.toString())
+
+        val noCommentRow = Row(entries)
+        assert("1 2 3" == noCommentRow.toString())
     }
 }
