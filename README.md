@@ -3,21 +3,6 @@ vector-test [ ![Download](https://api.bintray.com/packages/zelkatani/vector-test
 
 vector-test is a library for programmatically generating test vector files for [Logisim](https://github.com/reds-heig/logisim-evolution).
 
-## Adding vector-test
-
-Add JCenter to the list of repositories if not already included.
-
-```groovy
-repositories {
-    jcenter()
-}
-```
-
-### Gradle
-```groovy
-compile 'com.zelkatani:vector-test:0.1'
-```
-
 ## Usage
 
 vector-test has its own DSL/Builder implemented.
